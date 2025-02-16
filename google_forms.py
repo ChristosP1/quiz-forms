@@ -17,54 +17,74 @@ def create_google_form(questions):
     # ✅ Step 1: Δημιουργία νέας Google Form με quiz mode ενεργοποιημένο
     form_request = {
         "info": {
-            "title": "Quiz",
-            "documentTitle": "Quiz",
-        },
-        "settings": {
-            "quizSettings": {
-                "isQuiz": True  # ✅ Enable Quiz Mode
-            }
+            "title": "Quiz"
         }
     }
-
-    try:
-        form = service.forms().create(body=form_request).execute()
-    except Exception as e:
-        st.error(f"❌ Error creating form: {str(e)}")  # ✅ Show full error message in Streamlit
-        raise
-
+    form = service.forms().create(body=form_request).execute()
     form_id = form["formId"]
+    
+    quiz_update_request = {
+        "requests": [
+            {
+                "updateSettings": {
+                    "settings": {
+                        "quizSettings": {
+                            "isQuiz": True  # ✅ Enable quiz mode
+                        }
+                    },
+                    "updateMask": "quizSettings.isQuiz"
+                }
+            }
+        ]
+    }
+    service.forms().batchUpdate(formId=form_id, body=quiz_update_request).execute()
 
     # ✅ Step 2: Προσθήκη ερωτήσεων με grading
+    requests = []
     for i, q in enumerate(questions):
-        question = {
-            "requests": [
-                {
-                    "createItem": {
-                        "item": {
-                            "title": q["title"],
-                            "questionItem": {
-                                "question": {
-                                    "required": True,
-                                    "grading": {  # ✅ Add grading (assumes 1 point per question)
-                                        "pointValue": 1,
-                                        "correctAnswers": {
-                                            "answers": [{"value": q["options"][q["correct"]]}]  # Correct answer
-                                        }
-                                    },
-                                    "choiceQuestion": {
-                                        "type": "RADIO",
-                                        "options": [{"value": opt} for opt in q["options"]],
-                                        "shuffle": False,
-                                    },
+        question_request = {
+            "createItem": {
+                "item": {
+                    "title": q["title"],
+                    "questionItem": {
+                        "question": {
+                            "required": True,
+                            "grading": {  # ✅ Add grading
+                                "pointValue": 1,
+                                "correctAnswers": {
+                                    "answers": [{"value": q["options"][q["correct"]]}]
                                 }
                             },
-                        },
-                        "location": {"index": i},
-                    }
-                }
-            ]
+                            "choiceQuestion": {
+                                "type": "RADIO",
+                                "options": [{"value": opt} for opt in q["options"]],
+                                "shuffle": False,
+                            },
+                        }
+                    },
+                },
+                "location": {"index": i},
+            }
         }
-        service.forms().batchUpdate(formId=form_id, body=question).execute()
+        requests.append(question_request)
+
+    # ✅ Step 4: Send all questions in a single batch update
+    service.forms().batchUpdate(formId=form_id, body={"requests": requests}).execute()
 
     return f"https://docs.google.com/forms/d/{form_id}/edit"
+
+
+def get_form_responses(form_id):
+    """
+    Retrieves responses from a Google Form.
+    """
+    service_account_info = st.secrets["gcp_service_account"]
+    credentials = service_account.Credentials.from_service_account_info(service_account_info)
+
+    service = build("forms", "v1", credentials=credentials)
+
+    # ✅ Fetch responses
+    response = service.forms().responses().list(formId=form_id).execute()
+
+    return response.get("responses", [])
+
