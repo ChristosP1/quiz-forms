@@ -30,8 +30,8 @@ if uploaded_file is not None:
         questions.append(question_data)
     
     # Debugging: Show processed questions
-    st.write("🔍 Processed Questions:")
-    st.json(questions)
+    # st.write("🔍 Processed Questions:")
+    # st.json(questions)
 
     # Κουμπί για δημιουργία Google Form
     if st.button("📌 Δημιουργία Quiz στο Google Forms"):

@@ -16,11 +16,18 @@ def create_google_form(questions):
 
     # Δημιουργία νέας Google Form
     form_request = {
-        "info": {
-            "title": "Αυτόματο Quiz",
-            "documentTitle": "Αυτόματο Quiz",
+    "info": {
+        "title": "Quiz",
+        "documentTitle": "Quiz",
+    },
+    "settings": {
+        "quizSettings": {
+            "isQuiz": True,  # Converts form into a quiz
+            "showReleasedScore": "ALWAYS",  # Show results immediately after submission
+            }
         }
     }
+
 
     form = service.forms().create(body=form_request).execute()
     form_id = form["formId"]
