@@ -12,17 +12,26 @@ uploaded_file = st.file_uploader("Ανεβάστε το αρχείο CSV", type=
 
 if uploaded_file is not None:
     # Ανάγνωση αρχείου CSV
-    df = pd.read_csv(uploaded_file)
+    df = pd.read_csv(uploaded_file, encoding="utf-8").fillna("")
 
     # Μετατροπή δεδομένων σε λίστα ερωτήσεων
     questions = []
     for _, row in df.iterrows():
+        try:
+            correct_index = int(row["correct_answer"])  # Ensure valid integer
+        except ValueError:
+            correct_index = 0  # Default to first option if invalid
+
         question_data = {
-            "title": row["title"],
-            "options": [row["option_1"], row["option_2"], row["option_3"], row["option_4"]],
-            "correct": int(row["correct_answer"])  # Δείκτης της σωστής απάντησης
+            "title": row["title"].strip(),  # Remove trailing spaces
+            "options": [row["option_1"].strip(), row["option_2"].strip(), row["option_3"].strip(), row["option_4"].strip()],
+            "correct": correct_index
         }
         questions.append(question_data)
+    
+    # Debugging: Show processed questions
+    st.write("🔍 Processed Questions:")
+    st.json(questions)
 
     # Κουμπί για δημιουργία Google Form
     if st.button("📌 Δημιουργία Quiz στο Google Forms"):
