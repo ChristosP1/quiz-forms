@@ -20,8 +20,14 @@ def create_google_form(questions):
         "info": {
             "title": "Quiz",
             "documentTitle": "Quiz",
+        },
+        "settings": {
+            "quizSettings": {
+                "isQuiz": True 
+            }
         }
     }
+    
     form = service.forms().create(body=form_request).execute()
     form_id = form["formId"]
 
@@ -36,6 +42,12 @@ def create_google_form(questions):
                             "questionItem": {
                                 "question": {
                                     "required": True,
+                                    "grading": {
+                                        "pointValue": 1,
+                                        "correctAnswers": {
+                                            "answers": [{"value": q["options"][q["correct"]]}]  # Correct answer
+                                        }
+                                    },
                                     "choiceQuestion": {
                                         "type": "RADIO",
                                         "options": [{"value": opt} for opt in q["options"]],
@@ -50,16 +62,5 @@ def create_google_form(questions):
             ]
         }
         service.forms().batchUpdate(formId=form_id, body=question).execute()
-
-    time.sleep(10)  # ✅ Increase delay before calling the API
-
-    # ✅ Send request properly with formId in the URL
-    response = requests.get(APPS_SCRIPT_URL, params={"formId": form_id})
-
-    # Check if it worked
-    if response.status_code == 200:
-        print("✅ Quiz mode enabled successfully!")
-    else:
-        print(f"❌ Failed to enable quiz mode: {response.text}")
 
     return f"https://docs.google.com/forms/d/{form_id}/edit"
