@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 import requests  # Import requests to call Google Apps Script
 import time  # Import time for delay
 
-APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygw5LgIUY4EmV0y8dCGoS-26CRck0GgVSK9KIBYg-2BCoKmsEAiookX_yzh54c7SMV/exec"
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAcDeJ7Pnj5KTzzmqOsW524DQ37c9JgeD7sNJFotGOKlotWnug2Sdp2gp_j10XVD6_/exec"
 
 
 def create_google_form(questions):
