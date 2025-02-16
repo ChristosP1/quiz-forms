@@ -1,21 +1,20 @@
 import streamlit as st
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-import requests 
-import time 
-
-APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAcDeJ7Pnj5KTzzmqOsW524DQ37c9JgeD7sNJFotGOKlotWnug2Sdp2gp_j10XVD6_/exec"
-
+import time  
 
 def create_google_form(questions):
     """
     Δημιουργεί ένα Google Form Quiz από μια λίστα ερωτήσεων.
     """
+    # Φόρτωση των credentials από τα Streamlit Secrets
     service_account_info = st.secrets["gcp_service_account"]
     credentials = service_account.Credentials.from_service_account_info(service_account_info)
+
+    # Σύνδεση με το Google Forms API
     service = build("forms", "v1", credentials=credentials)
 
-    # Δημιουργία νέας Google Form
+    # ✅ Step 1: Δημιουργία νέας Google Form με quiz mode ενεργοποιημένο
     form_request = {
         "info": {
             "title": "Quiz",
@@ -23,15 +22,15 @@ def create_google_form(questions):
         },
         "settings": {
             "quizSettings": {
-                "isQuiz": True 
+                "isQuiz": True  # ✅ Enable Quiz Mode
             }
         }
     }
-    
+
     form = service.forms().create(body=form_request).execute()
     form_id = form["formId"]
 
-    # Προσθήκη ερωτήσεων
+    # ✅ Step 2: Προσθήκη ερωτήσεων με grading
     for i, q in enumerate(questions):
         question = {
             "requests": [
@@ -42,7 +41,7 @@ def create_google_form(questions):
                             "questionItem": {
                                 "question": {
                                     "required": True,
-                                    "grading": {
+                                    "grading": {  # ✅ Add grading (assumes 1 point per question)
                                         "pointValue": 1,
                                         "correctAnswers": {
                                             "answers": [{"value": q["options"][q["correct"]]}]  # Correct answer
