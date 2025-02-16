@@ -54,7 +54,7 @@ def create_google_form(questions):
     time.sleep(10)  # ✅ Increase delay before calling the API
 
     # ✅ Send request properly with formId in the URL
-    response = requests.get(f"{APPS_SCRIPT_URL}", params={"formId": form_id})
+    response = requests.get(APPS_SCRIPT_URL, params={"formId": form_id})
 
     # Check if it worked
     if response.status_code == 200:
