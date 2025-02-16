@@ -27,7 +27,12 @@ def create_google_form(questions):
         }
     }
 
-    form = service.forms().create(body=form_request).execute()
+    try:
+        form = service.forms().create(body=form_request).execute()
+    except Exception as e:
+        st.error(f"❌ Error creating form: {str(e)}")  # ✅ Show full error message in Streamlit
+        raise
+
     form_id = form["formId"]
 
     # ✅ Step 2: Προσθήκη ερωτήσεων με grading
