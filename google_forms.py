@@ -11,11 +11,8 @@ def create_google_form(questions):
     """
     Δημιουργεί ένα Google Form Quiz από μια λίστα ερωτήσεων.
     """
-    # Φόρτωση των credentials από τα Streamlit Secrets
     service_account_info = st.secrets["gcp_service_account"]
     credentials = service_account.Credentials.from_service_account_info(service_account_info)
-
-    # Σύνδεση με το Google Forms API
     service = build("forms", "v1", credentials=credentials)
 
     # Δημιουργία νέας Google Form
@@ -25,7 +22,6 @@ def create_google_form(questions):
             "documentTitle": "Quiz",
         }
     }
-
     form = service.forms().create(body=form_request).execute()
     form_id = form["formId"]
 
@@ -55,7 +51,7 @@ def create_google_form(questions):
         }
         service.forms().batchUpdate(formId=form_id, body=question).execute()
 
-    time.sleep(5)  # ✅ Wait for form creation to complete
+    time.sleep(10)  # ✅ Increase delay before calling the API
 
     # ✅ Send request properly with formId in the URL
     response = requests.get(f"{APPS_SCRIPT_URL}", params={"formId": form_id})
