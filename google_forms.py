@@ -52,7 +52,7 @@ def create_google_form(questions):
                             "grading": {  # ✅ Add grading
                                 "pointValue": 1,
                                 "correctAnswers": {
-                                    "answers": [{"value": q["options"][q["correct"]]}]
+                                    "answers": [{"value": q["options"][q["correct"]-1]}]
                                 }
                             },
                             "choiceQuestion": {
