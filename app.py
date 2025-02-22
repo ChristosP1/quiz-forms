@@ -36,7 +36,7 @@ if uploaded_file is not None:
         form_link = create_google_form(questions)
         st.success(f"Το quiz δημιουργήθηκε! [Άνοιξε το Google Form]({form_link})")
         with st.button("📋", key="copy"):
-            clipboard.copy(form_link)
+            clipboard.copy(f"form_link")
 
         # ✅ Show a button to fetch responses
         form_id = form_link.split("/")[-2]  # Extract form ID from link
