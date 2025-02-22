@@ -35,7 +35,7 @@ if uploaded_file is not None:
     if st.button("📌 Δημιουργία Quiz στο Google Forms"):
         form_link = create_google_form(questions)
         st.success(f"Το quiz δημιουργήθηκε! [Άνοιξε το Google Form]({form_link})")
-        st.code(str(form_link)[:25], language="")
+        st.code(f"{str(form_link)[:50]} . . . ", language="")
 
         # ✅ Show a button to fetch responses
         form_id = form_link.split("/")[-2]  # Extract form ID from link
