@@ -35,6 +35,7 @@ if uploaded_file is not None:
     if st.button("📌 Δημιουργία Quiz στο Google Forms"):
         form_link = create_google_form(questions)
         st.success(f"Το quiz δημιουργήθηκε! [Άνοιξε το Google Form]({form_link})")
+        st.write(type(form_link))
         if st.button('Αντιγραφή link'):
             pyperclip.copy(form_link)
             st.success('Το link αντιγράφτηκε!')
